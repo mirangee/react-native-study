@@ -12,8 +12,16 @@ export default function App() {
     // 콜백 함수의 매개값은 해당 상태 변수의 최신 값이 전달됨
     setTodoGoals((currentTodoGoals) => [
       ...currentTodoGoals,
-      { text: enteredGoalText, key: Math.random().toString() },
+      { text: enteredGoalText, id: Math.random().toString() },
     ]);
+  };
+  const deleteGoalHandler = (id) => {
+    setTodoGoals((currentTodoGoals) => {
+      return currentTodoGoals.filter((goal) => {
+        console.log('누른 버튼의 id', id);
+        return goal.id !== id;
+      });
+    });
   };
   return (
     <View style={styles.appContainer}>
@@ -30,10 +38,16 @@ export default function App() {
         <FlatList
           data={todoGoals}
           renderItem={(itemData) => {
-            return <GoalItem text={itemData.item.text} />;
+            return (
+              <GoalItem
+                text={itemData.item.text}
+                id={itemData.item.id}
+                onDeleteItem={deleteGoalHandler}
+              />
+            );
           }}
           keyExtractor={(item, index) => {
-            return item.key;
+            return item.id;
           }}
         ></FlatList>
       </View>
