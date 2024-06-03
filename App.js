@@ -1,25 +1,12 @@
 import { useState } from 'react';
-import {
-  Button,
-  FlatList,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { FlatList, StyleSheet, View } from 'react-native';
+import GoalItem from './components/GoalItem';
+import GoalInput from './components/GoalInput';
 
 export default function App() {
-  // 입력창의 상태를 관리하는 변수를 React에서 사용하는 useState 훅을 활용하여 선언
-  const [enteredGoalText, setEnteredGoalText] = useState('');
   const [todoGoals, setTodoGoals] = useState([]);
-
-  // 사용자가 내용을 입력할 때 해당 입력값을 가져오는 함수
-  const goalInputHandler = (enteredText) => {
-    setEnteredGoalText(enteredText);
-  };
-
   // 버튼을 누르면 할 일 목록을 추가하는 함수
-  const addGoalHandler = () => {
+  const addGoalHandler = (enteredGoalText) => {
     // setTodoGoals([...todoGoals, enteredGoalText]);
     // useState setter 메서드의 스냅샷 방식
     // 콜백 함수의 매개값은 해당 상태 변수의 최신 값이 전달됨
@@ -28,17 +15,9 @@ export default function App() {
       { text: enteredGoalText, key: Math.random().toString() },
     ]);
   };
-
   return (
     <View style={styles.appContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.textInput}
-          placeholder='할 일을 입력하세요'
-          onChangeText={goalInputHandler}
-        />
-        <Button title='할 일 추가하기' onPress={addGoalHandler} />
-      </View>
+      <GoalInput onAddGoal={addGoalHandler} />
 
       <View style={styles.goalsContainer}>
         {/* 
@@ -51,11 +30,7 @@ export default function App() {
         <FlatList
           data={todoGoals}
           renderItem={(itemData) => {
-            return (
-              <View style={styles.goalItem}>
-                <Text style={styles.goalText}> {itemData.item.text} </Text>
-              </View>
-            );
+            return <GoalItem text={itemData.item.text} />;
           }}
           keyExtractor={(item, index) => {
             return item.key;
@@ -72,32 +47,7 @@ const styles = StyleSheet.create({
     paddingTop: 50,
     paddingHorizontal: 16,
   },
-  inputContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 24,
-    borderBottomWidth: 1,
-    borderBottomColor: '#cccccc',
-  },
-  textInput: {
-    borderWidth: 1,
-    borderColor: '#cccccc',
-    width: '70%',
-    marginRight: 8,
-    padding: 8,
-  },
   goalsContainer: {
     flex: 4,
-  },
-  goalItem: {
-    margin: 8,
-    padding: 8,
-    borderRadius: 6,
-    backgroundColor: '#5e0acc',
-  },
-  goalText: {
-    color: 'white',
   },
 });
