@@ -1,10 +1,14 @@
 import { useState } from 'react';
-import { FlatList, StyleSheet, View } from 'react-native';
+import { Button, FlatList, StyleSheet, View } from 'react-native';
 import GoalItem from './components/GoalItem';
 import GoalInput from './components/GoalInput';
 
 export default function App() {
+  // 모달의 렌더링 상태를 나타내는 변수
+  const [modalIsVisible, setModalIsVisible] = useState(false);
+
   const [todoGoals, setTodoGoals] = useState([]);
+
   // 버튼을 누르면 할 일 목록을 추가하는 함수
   const addGoalHandler = (enteredGoalText) => {
     // setTodoGoals([...todoGoals, enteredGoalText]);
@@ -14,27 +18,43 @@ export default function App() {
       ...currentTodoGoals,
       { text: enteredGoalText, id: Math.random().toString() },
     ]);
+
+    // 추가 후에 모달 창 닫히도록 처리
+    endAddGoalHandler();
   };
   const deleteGoalHandler = (id) => {
     setTodoGoals((currentTodoGoals) => {
       return currentTodoGoals.filter((goal) => {
-        console.log('누른 버튼의 id', id);
         return goal.id !== id;
       });
     });
   };
+
+  // 할 일 추가 모달을 띄워주는 함수
+  const startAddGoalHandler = () => {
+    setModalIsVisible(true);
+  };
+
+  const endAddGoalHandler = () => {
+    setModalIsVisible(false);
+  };
   return (
     <View style={styles.appContainer}>
-      <GoalInput onAddGoal={addGoalHandler} />
-
+      <Button
+        title='할 일을 추가하려면 누르세요!'
+        color='#5e0acc'
+        onPress={startAddGoalHandler}
+      />
+      {/*
+       ModalIsVisible &&(조건부 렌더링)을 직접 작성할 필요 없이
+       GoalInput의 Modal에 visible props를 이용하면 된다.
+      */}
+      <GoalInput
+        visible={modalIsVisible}
+        onAddGoal={addGoalHandler}
+        onCancel={endAddGoalHandler}
+      />
       <View style={styles.goalsContainer}>
-        {/* 
-          ScrollView는 전체 화면이 렌더링될 때 안의 항목들을 전부 렌더링합니다.
-          이로 인해 성능 상의 저하가 나타날 수 있습니다.
-          (보이지 않는 영역까지 렌더링을 진행하기 때문에 목록이 많다면 로딩이 길어짐)
-          FlatList는 보이는 영역만 일단 렌더링을 진행하고, 나머지 항목들은
-          스크롤 움직임이 발생하면 그때 그때 렌더링을 진행합니다.
-        */}
         <FlatList
           data={todoGoals}
           renderItem={(itemData) => {
